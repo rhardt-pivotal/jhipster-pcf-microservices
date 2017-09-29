@@ -4,7 +4,10 @@ import io.pivotal.fe.rhardt.security.AuthoritiesConstants;
 
 import io.github.jhipster.config.JHipsterProperties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +20,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -29,6 +33,8 @@ import java.util.Map;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class MicroserviceSecurityConfiguration extends ResourceServerConfigurerAdapter {
 
+    private static final Log log = LogFactory.getLog(MicroserviceSecurityConfiguration.class);
+
     private final JHipsterProperties jHipsterProperties;
 
     private final DiscoveryClient discoveryClient;
@@ -38,6 +44,11 @@ public class MicroserviceSecurityConfiguration extends ResourceServerConfigurerA
 
         this.jHipsterProperties = jHipsterProperties;
         this.discoveryClient = discoveryClient;
+    }
+
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+        resources.resourceId("albums");
     }
 
     @Override
@@ -66,28 +77,39 @@ public class MicroserviceSecurityConfiguration extends ResourceServerConfigurerA
     }
 
     @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter(
-            @Qualifier("loadBalancedRestTemplate") RestTemplate keyUriRestTemplate) {
-
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setVerifierKey(getKeyFromAuthorizationServer(keyUriRestTemplate));
-        return converter;
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        try{
+            JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+            converter.setVerifierKey(getKeyFromAuthorizationServer());
+            return converter;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            log.error(e);
+            throw e;
+        }
     }
 
-    @Bean
-    public RestTemplate loadBalancedRestTemplate(RestTemplateCustomizer customizer) {
-        RestTemplate restTemplate = new RestTemplate();
-        customizer.customize(restTemplate);
-        return restTemplate;
-    }
+//    @Bean
+//    public RestTemplate loadBalancedRestTemplate(RestTemplateCustomizer customizer) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        customizer.customize(restTemplate);
+//        return restTemplate;
+//    }
 
-    private String getKeyFromAuthorizationServer(RestTemplate keyUriRestTemplate) {
+    @Value("${ssoServiceUrl}")
+    private String ssoServiceUrl;
+
+
+    private String getKeyFromAuthorizationServer() {
         // Load available UAA servers
-        discoveryClient.getServices();
+        //discoveryClient.getServices();
         HttpEntity<Void> request = new HttpEntity<Void>(new HttpHeaders());
-        return (String) keyUriRestTemplate
-            .exchange("http://uaa/oauth/token_key", HttpMethod.GET, request, Map.class).getBody()
-            .get("value");
+        Map x =  new RestTemplate()
+            .exchange(ssoServiceUrl+"/token_key", HttpMethod.GET, request, Map.class).getBody();
 
+        String ret = (String)x.get("value");
+        log.info("KEY FROM AUTH SERVER: "+ret);
+        return ret;
     }
 }

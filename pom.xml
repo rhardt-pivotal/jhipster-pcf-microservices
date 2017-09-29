@@ -85,7 +85,7 @@
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
 
         <!-- Spring properties -->
-        <spring-cloud.version>Dalston.SR2</spring-cloud.version>
+        <spring-cloud.version>Dalston.RELEASE</spring-cloud.version>
         <spring-security-oauth.version>2.0.12.RELEASE</spring-security-oauth.version>
         <springfox.version>2.7.0</springfox.version>
         <validation-api.version>1.1.0.Final</validation-api.version>
@@ -98,6 +98,13 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.pivotal.spring.cloud</groupId>
+                <artifactId>spring-cloud-services-dependencies</artifactId>
+                <version>1.4.1.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -408,6 +415,29 @@
             <artifactId>spring-security-data</artifactId>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+
+
+        <dependency>
+            <groupId>io.pivotal.spring.cloud</groupId>
+            <artifactId>spring-cloud-sso-connector</artifactId>
+            <version>2.0.0.RELEASE</version>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>io.pivotal.spring.cloud</groupId>-->
+            <!--<artifactId>spring-cloud-services-starter-circuit-breaker</artifactId>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>io.pivotal.spring.cloud</groupId>
+            <artifactId>spring-cloud-services-starter-config-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.pivotal.spring.cloud</groupId>
+            <artifactId>spring-cloud-services-starter-service-registry</artifactId>
+        </dependency>
+
+
+
     </dependencies>
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>

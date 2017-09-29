@@ -13,12 +13,12 @@
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
-eureka:
-    instance:
-        prefer-ip-address: true
-    client:
-        service-url:
-            defaultZone: http://admin:${jhipster.registry.password}@localhost:8761/eureka/
+#eureka:
+#    instance:
+#        prefer-ip-address: false
+#    client:
+#        service-url:
+#            defaultZone: http://admin:${jhipster.registry.password}@jhipsterregistry.cfapps.hereismysourceco.de/eureka/
 
 spring:
     devtools:
@@ -26,17 +26,17 @@ spring:
             enabled: false
         livereload:
             enabled: false
-    datasource:
-        type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://localhost:3306/microservices?useUnicode=true&characterEncoding=utf8&useSSL=false
-        username: root
-        password:
-        hikari:
-            data-source-properties:
-                cachePrepStmts: true
-                prepStmtCacheSize: 250
-                prepStmtCacheSqlLimit: 2048
-                useServerPrepStmts: true
+#    datasource:
+#        type: com.zaxxer.hikari.HikariDataSource
+#        url: jdbc:mysql://localhost:3306/microservices?useUnicode=true&characterEncoding=utf8&useSSL=false
+#        username: root
+#        password:
+#        hikari:
+#            data-source-properties:
+#                cachePrepStmts: true
+#                prepStmtCacheSize: 250
+#                prepStmtCacheSqlLimit: 2048
+#                useServerPrepStmts: true
     jpa:
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         database: MYSQL
@@ -50,19 +50,19 @@ spring:
             hibernate.cache.hazelcast.instance_name: microservices
             hibernate.cache.use_minimal_puts: true
             hibernate.cache.hazelcast.use_lite_member: true
-    mail:
-        host: localhost
-        port: 25
-        username:
-        password:
+#    mail:
+#        host: localhost
+#        port: 25
+#        username:
+#        password:
     thymeleaf:
         cache: true
-    zipkin: # Use the "zipkin" Maven profile to have the Spring Cloud Zipkin dependencies
-        base-url: http://localhost:9411
-        enabled: false
-        locator:
-            discovery:
-                enabled: true
+#    zipkin: # Use the "zipkin" Maven profile to have the Spring Cloud Zipkin dependencies
+#        base-url: http://localhost:9411
+#        enabled: false
+#        locator:
+#            discovery:
+#                enabled: true
 
 liquibase:
     contexts: prod
@@ -108,10 +108,10 @@ jhipster:
             backup-count: 1
     security:
         client-authorization:
-            access-token-uri: http://uaa/oauth/token
-            token-service-id: uaa
-            client-id: internal
-            client-secret: internal
+            access-token-uri: ${security.oauth2.client.accessTokenUri}
+            token-service-id: ${spring.application.name}
+            client-id: ${security.oauth2.client.clientId}
+            client-secret: ${security.oauth2.client.clientSecret}
     mail: # specific JHipster mail property, for standard properties see MailProperties
         from: microservices@localhost
         base-url: http://my-server-url-to-change # Modify according to your server's URL
@@ -148,3 +148,16 @@ jhipster:
 # ===================================================================
 
 application:
+
+security:
+  basic:
+    enabled: false
+
+management:
+  security:
+    enabled: false
+  health:
+    rabbit:
+      enabled: false
+
+
